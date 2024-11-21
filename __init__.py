@@ -25,9 +25,9 @@ def meteo():
 def mongraphique():
     return render_template("graphique.html")
 
-#   @app.route("/histogramme/")
-# def histogramme():
-#     return render_template("histogramme.html")
+@app.route("/histogramme/")
+def mongraphique():
+    return render_template("graphique.html")
 
 @app.route('/extract-minutes/<date_string>')
 def extract_minutes(date_string):
