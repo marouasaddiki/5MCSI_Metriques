@@ -20,22 +20,16 @@ def meteo():
         temp_day_value = list_element.get('main', {}).get('temp') - 273.15 # Conversion de Kelvin en °c 
         results.append({'Jour': dt_value, 'temp': temp_day_value})
     return jsonify(results=results)
+  
 @app.route("/rapport/")
 def mongraphique():
     return render_template("graphique.html")
+  
 @app.route('/extract-minutes/<date_string>')
 def extract_minutes(date_string):
         date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
         minutes = date_object.minute
         return jsonify({'minutes': minutes})
-
-@app.route('/commits/')
-def commits():
-    # URL de l'API GitHub pour les commits du repository
-    url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
-  
-  response = urlopen(url)
-    data = json.loads(response.read().decode())
 
 
 @app.route('/')
