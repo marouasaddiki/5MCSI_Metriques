@@ -31,6 +31,37 @@ def extract_minutes(date_string):
         minutes = date_object.minute
         return jsonify({'minutes': minutes})
 
+@app.route('/commits/')
+def commits_chart():
+    # API GitHub
+    url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
+    response = requests.get(url)
+    data = response.json()
+    
+    # Extraire les minutes
+    commit_dates = [commit['commit']['author']['date'] for commit in data]
+    commit_minutes = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').minute for date in commit_dates]
+    
+    # Comptabiliser les commits par minute
+    commit_count = Counter(commit_minutes)
+    
+    # Créer un graphique
+    plt.figure(figsize=(10, 6))
+    plt.bar(commit_count.keys(), commit_count.values())
+    plt.xlabel('Minutes')
+    plt.ylabel('Nombre de Commits')
+    plt.title('Nombre de Commits par Minute')
+    
+    # Sauvegarder le graphique en mémoire
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    img_base64 = base64.b64encode(img.getvalue()).decode()
+    img.close()
+    
+    # Retourner le graphique sous forme d'image
+    return f'<img src="data:image/png;base64,{img_base64}" />'
+
 
 @app.route('/')
 def hello_world():
