@@ -20,7 +20,17 @@ def meteo():
         temp_day_value = list_element.get('main', {}).get('temp') - 273.15 # Conversion de Kelvin en °c 
         results.append({'Jour': dt_value, 'temp': temp_day_value})
     return jsonify(results=results)
-  
+  @app.route("/histogramme/")
+def mongraphique():
+    return render_template("graphique.html")
+# Route pour extraire les minutes d'une information formatée
+# Route pour extraire les minutes d'une information formatée
+@app.route('/extract-minutes/<date_string>')
+def extract_minutes(date_string):
+    date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
+    minutes = date_object.minute
+    return jsonify({'minutes': minutes})
+
 @app.route("/rapport/")
 def mongraphique():
     return render_template("graphique.html")
