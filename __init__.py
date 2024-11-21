@@ -32,34 +32,7 @@ def extract_minutes(date_string):
         return jsonify({'minutes': minutes})
 
 
-        @app.route('/commits/')
-def commits_chart():
-    try:
-        # Appel de l'API GitHub avec urllib
-        url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
-        with urllib.request.urlopen(url) as response:
-            raw_data = response.read()
-            data = json.loads(raw_data.decode('utf-8'))
-
-        # Extraire les dates des commits
-        commit_dates = [commit['commit']['author']['date'] for commit in data]
-        commit_minutes = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').minute for date in commit_dates]
-
-        # Comptabiliser les commits par minute
-        commit_count = Counter(commit_minutes)
-
-        # Générer un tableau HTML simple
-        table_html = "<table border='1'><tr><th>Minute</th><th>Nombre de Commits</th></tr>"
-        for minute, count in sorted(commit_count.items()):
-            table_html += f"<tr><td>{minute}</td><td>{count}</td></tr>"
-        table_html += "</table>"
-
-        # Retourner le tableau HTML
-        return f"<h1>Commits par minute</h1>{table_html}"
-
-    except Exception as e:
-        return f"Erreur : {str(e)}", 500
-
+   
 
 @app.route('/')
 def hello_world():
