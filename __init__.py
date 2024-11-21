@@ -31,6 +31,33 @@ def extract_minutes(date_string):
         minutes = date_object.minute
         return jsonify({'minutes': minutes})
 
+# Route pour récupérer les commits minute par minute
+@app.route('/commits/')
+def commits():
+    # URL de l'API GitHub pour les commits du repository
+    url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
+
+    # Ouvrir l'URL et lire les données
+    response = urlopen(url)
+    data = json.loads(response.read().decode())
+
+    # Initialisation d'un dictionnaire pour compter les commits par minute
+    commits_per_minute = {}
+
+    # Parcours des commits pour compter les occurrences par minute
+    for commit in data:
+        commit_date = commit['commit']['author']['date']
+        minute = extract_minutes(commit_date)['minutes']
+        if minute in commits_per_minute:
+            commits_per_minute[minute] += 1
+        else:
+            commits_per_minute[minute] = 1
+
+    # Création d'une liste de tuples (minute, nombre de commits)
+    commits_data = [{'minute': minute, 'commits': commits_per_minute[minute]} for minute in sorted(commits_per_minute.keys())]
+
+    # Retourner les données au format JSON
+    return jsonify({'commits_data': commits_data})
 
    
 
