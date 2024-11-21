@@ -1,16 +1,20 @@
-from flask import Flask, render_template_string, render_template, jsonify
-from flask import render_template
+from flask import Flask, rendertemplatestring, rendertemplate, jsonify
+from flask import rendertemplate
 from flask import json
 from datetime import datetime
 from urllib.request import urlopen
 import sqlite3
-                                                                                                                                       
-app = Flask(__name__)     
+
+app = Flask(name)
+
+@app.route('/')
+def hello_world():
+    return render_template('hello.html') #Comm
 
 @app.route("/contact/")
 def contact():
     return render_template("contact.html")
-  
+
 @app.route('/tawarano/')
 def meteo():
     response = urlopen('https://samples.openweathermap.org/data/2.5/forecast?lat=0&lon=0&appid=xxx')
@@ -23,29 +27,13 @@ def meteo():
         results.append({'Jour': dt_value, 'temp': temp_day_value})
     return jsonify(results=results)
 
-
-@app.route('/extract-minutes/<date_string>')
-def extract_minutes(date_string):
-    date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
-    minutes = date_object.minute
-    return jsonify({'minutes': minutes})
-
 @app.route("/rapport/")
 def mongraphique():
     return render_template("graphique.html")
-  
-@app.route('/extract-minutes/<date_string>')
-def extract_minutes(date_string):
-        date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
-        minutes = date_object.minute
-        return jsonify({'minutes': minutes})
 
+@app.route("/historigramme/")
+def histogramme():
+    return render_template("historigramme.html")
 
-
-@app.route('/')
-def hello_world():
-    return render_template('hello.html') #comm
-
-
-if __name__ == "__main__":
+if __name == "__main":
   app.run(debug=True)
