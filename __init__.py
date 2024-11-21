@@ -31,17 +31,15 @@ def extract_minutes(date_string):
         minutes = date_object.minute
         return jsonify({'minutes': minutes})
 
-@app.route('/commits/')
+
+        @app.route('/commits/')
 def commits_chart():
     try:
-        # Appeler l'API GitHub pour récupérer les commits
+        # Appel de l'API GitHub avec urllib
         url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
-        response = requests.get(url)
-        
-        if response.status_code != 200:
-            return f"Erreur lors de l'accès à l'API GitHub : {response.status_code}", 500
-        
-        data = response.json()
+        with urllib.request.urlopen(url) as response:
+            raw_data = response.read()
+            data = json.loads(raw_data.decode('utf-8'))
 
         # Extraire les dates des commits
         commit_dates = [commit['commit']['author']['date'] for commit in data]
@@ -50,23 +48,14 @@ def commits_chart():
         # Comptabiliser les commits par minute
         commit_count = Counter(commit_minutes)
 
-        # Créer un graphique
-        plt.figure(figsize=(10, 6))
-        plt.bar(commit_count.keys(), commit_count.values())
-        plt.xlabel('Minutes')
-        plt.ylabel('Nombre de Commits')
-        plt.title('Nombre de Commits par Minute')
+        # Générer un tableau HTML simple
+        table_html = "<table border='1'><tr><th>Minute</th><th>Nombre de Commits</th></tr>"
+        for minute, count in sorted(commit_count.items()):
+            table_html += f"<tr><td>{minute}</td><td>{count}</td></tr>"
+        table_html += "</table>"
 
-        # Sauvegarder le graphique en mémoire
-        img = io.BytesIO()
-        plt.savefig(img, format='png')
-        img.seek(0)
-        img_base64 = base64.b64encode(img.getvalue()).decode()
-        img.close()
-        plt.close() # Fermer le graphique pour éviter les conflits
-
-        # Retourner le graphique sous forme d'image
-        return f'<img src="data:image/png;base64,{img_base64}" />'
+        # Retourner le tableau HTML
+        return f"<h1>Commits par minute</h1>{table_html}"
 
     except Exception as e:
         return f"Erreur : {str(e)}", 500
