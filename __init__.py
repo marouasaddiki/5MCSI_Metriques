@@ -37,19 +37,7 @@ def commits():
   response = urlopen(url)
     data = json.loads(response.read().decode())
 
- commits_per_minute = {}
 
- for commit in data:
-        commit_date = commit['commit']['author']['date']
-        minute = extract_minutes(commit_date)['minutes']
-        if minute in commits_per_minute:
-            commits_per_minute[minute] += 1
-        else:
-            commits_per_minute[minute] = 1
-          
-              commits_data = [{'minute': minute, 'commits': commits_per_minute[minute]} for minute in sorted(commits_per_minute.keys())]
-
-  return jsonify({'commits_data': commits_data})
 @app.route('/')
 def hello_world():
     return render_template('hello.html') #comm
