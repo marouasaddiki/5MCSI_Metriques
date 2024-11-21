@@ -6,9 +6,11 @@ from urllib.request import urlopen
 import sqlite3
                                                                                                                                        
 app = Flask(__name__)     
+
 @app.route("/contact/")
 def contact():
     return render_template("contact.html")
+  
 @app.route('/tawarano/')
 def meteo():
     response = urlopen('https://samples.openweathermap.org/data/2.5/forecast?lat=0&lon=0&appid=xxx')
@@ -38,7 +40,6 @@ def extract_minutes(date_string):
         minutes = date_object.minute
         return jsonify({'minutes': minutes})
 
-# Route pour récupérer les commits minute par minute
 
 
 @app.route('/')
