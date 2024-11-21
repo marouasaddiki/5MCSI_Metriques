@@ -23,7 +23,33 @@ def meteo():
 @app.route("/rapport/")
 def mongraphique():
     return render_template("graphique.html")
+@app.route('/extract-minutes/<date_string>')
+def extract_minutes(date_string):
+        date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
+        minutes = date_object.minute
+        return jsonify({'minutes': minutes})
 
+@app.route('/commits/')
+def commits():
+    # URL de l'API GitHub pour les commits du repository
+    url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
+  
+  response = urlopen(url)
+    data = json.loads(response.read().decode())
+
+ commits_per_minute = {}
+
+ for commit in data:
+        commit_date = commit['commit']['author']['date']
+        minute = extract_minutes(commit_date)['minutes']
+        if minute in commits_per_minute:
+            commits_per_minute[minute] += 1
+        else:
+            commits_per_minute[minute] = 1
+          
+              commits_data = [{'minute': minute, 'commits': commits_per_minute[minute]} for minute in sorted(commits_per_minute.keys())]
+
+  return jsonify({'commits_data': commits_data})
 @app.route('/')
 def hello_world():
     return render_template('hello.html') #comm
